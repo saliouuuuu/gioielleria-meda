@@ -55,13 +55,14 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231c1a16'/%3E%3Ctext x='32' y='45' text-anchor='middle' font-family='Georgia,serif' font-size='36' fill='%23c2a28d'%3EM%3C/text%3E%3C/svg%3E">
 
 <!--
-  Font: Instrument Serif (titoli, stretto ed editoriale) + Instrument Sans (testo).
-  Per la versione definitiva conviene ospitarli sul proprio server
-  (GDPR: Google Fonts da server Google trasmette l'IP del visitatore).
+  Font ospitati in locale (cartella /fonts, licenza SIL OFL): nessuna chiamata
+  a Google (GDPR) e caricamento più rapido.
+  - Bodoni Moda (titoli): Didone variabile, l'optical size si adatta da solo alla misura.
+  - Hanken Grotesk (testo e interfaccia).
+  TEMPLATE: per cambiare carattere basta sostituire i due file e i nomi in --serif / --sans.
 -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="preload" href="fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/hanken-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
 
 <!--
   Dati strutturati LocalBusiness → JewelryStore.
@@ -103,10 +104,19 @@
 <script>document.documentElement.classList.add('js');</script>
 
 <style>
+@font-face {
+  font-family: 'Bodoni Moda'; font-style: normal; font-weight: 400 600; font-display: swap;
+  src: url('fonts/bodoni-moda-latin.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Hanken Grotesk'; font-style: normal; font-weight: 400 600; font-display: swap;
+  src: url('fonts/hanken-grotesk-latin.woff2') format('woff2');
+}
+
 /* ==========================================================================
    1. TOKEN — colori, font, misure. Cambiare qui per modificare tutto il sito.
    Due superfici che si alternano: notte calda (scuro) e pietra (chiaro).
-   Un solo accento: taupe rosato, per bottoni e parole in corsivo.
+   Un solo accento: taupe rosato, solo per i bottoni principali.
    ========================================================================== */
 :root {
   --night:    #1c1a16;   /* fondo scuro caldo, non nero puro */
@@ -123,8 +133,8 @@
   --line-d:   rgba(243, 238, 230, .16);  /* linee sottili su scuro */
   --line-l:   rgba(28, 26, 22, .16);     /* linee sottili su chiaro */
 
-  --serif: 'Instrument Serif', 'Times New Roman', Georgia, serif;
-  --sans:  'Instrument Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --serif: 'Bodoni Moda', Didot, 'Bodoni 72', 'Times New Roman', serif;
+  --sans:  'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   --maxw: 1320px;
   --gutter: clamp(20px, 5vw, 64px);
@@ -153,8 +163,11 @@ body {
 }
 img { display: block; max-width: 100%; height: auto; }
 a { color: inherit; text-decoration: none; }
-h1, h2, h3 { font-family: var(--serif); font-weight: 400; line-height: .95; margin: 0; letter-spacing: -.01em; }
-h1 em, h2 em { font-style: italic; color: var(--taupe); }
+h1, h2, h3 { font-family: var(--serif); font-weight: 400; line-height: 1.1; margin: 0; }
+/* Titoli di sezione: maiuscolo spaziato, come nelle insegne e nei cataloghi di gioielleria */
+h1, h2 { text-transform: uppercase; letter-spacing: .045em; line-height: 1.08; text-wrap: balance;
+  /* optical size fissato: con l'automatico i filetti sottili spariscono sugli schermi non retina */
+  font-optical-sizing: none; font-variation-settings: "opsz" 28; }
 p { margin: 0; }
 ul { list-style: none; margin: 0; padding: 0; }
 button { font: inherit; color: inherit; }
@@ -168,7 +181,6 @@ button { font: inherit; color: inherit; }
 .container { width: 100%; max-width: var(--maxw); margin-inline: auto; padding-inline: var(--gutter); }
 .section { padding-block: var(--section-y); }
 .section--light { background: var(--stone); color: var(--ink); }
-.section--light h2 em { color: var(--taupe-dk); }
 
 /* Micro-etichette editoriali (numero sezione · linea · nome) */
 .meta {
@@ -179,7 +191,7 @@ button { font: inherit; color: inherit; }
 .section--light .meta { color: var(--ink-2); }
 .meta__line { flex: 1; height: 1px; background: currentColor; opacity: .35; min-width: 24px; }
 .meta--head { margin-bottom: clamp(28px, 4vw, 56px); }
-.title { font-size: clamp(3rem, 11vw, 6.5rem); }
+.title { font-size: clamp(1.9rem, 7vw, 3.4rem); }
 .lead { color: var(--ivory-2); max-width: 44ch; }
 .section--light .lead { color: var(--ink-2); }
 
@@ -189,7 +201,7 @@ button { font: inherit; color: inherit; }
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 12px;
   min-height: 52px; padding: 0 28px; border-radius: 999px; border: 1px solid transparent; cursor: pointer;
-  font-family: var(--sans); font-size: .875rem; font-weight: 600; letter-spacing: .02em; white-space: nowrap;
+  font-family: var(--sans); font-size: .75rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; white-space: nowrap;
   transition: background-color .25s, color .25s, border-color .25s;
 }
 .btn svg { width: 17px; height: 17px; flex: none; }
@@ -202,7 +214,7 @@ button { font: inherit; color: inherit; }
 .btn--ink { background: var(--ink); color: var(--ivory); }
 .btn--ink:hover { background: #38332c; }
 
-.link-arrow { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; font-size: .875rem; font-weight: 600; }
+.link-arrow { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; font-size: .75rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; }
 .link-arrow svg { width: 16px; height: 16px; }
 .link-arrow:hover { color: var(--taupe); }
 .section--light .link-arrow:hover { color: var(--taupe-dk); }
@@ -300,8 +312,8 @@ button { font: inherit; color: inherit; }
 .site-header { position: relative; z-index: 3; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 18px var(--gutter); }
 /* LOGO: sostituire il testo con <img src="img/logo.svg" alt="Gioielleria Meda" width="..." height="..."> */
 .brand { display: inline-flex; flex-direction: column; line-height: 1; }
-.brand__name { font-family: var(--serif); font-size: 2rem; letter-spacing: .02em; }
-.brand__sub { margin-top: 4px; font-size: .5625rem; font-weight: 500; letter-spacing: .32em; text-transform: uppercase; color: var(--ivory-2); }
+.brand__name { font-family: var(--serif); font-size: 1.625rem; font-weight: 500; letter-spacing: .3em; margin-right: -.3em; text-transform: uppercase; }
+.brand__sub { margin-top: 7px; font-size: .5625rem; font-weight: 500; letter-spacing: .32em; text-transform: uppercase; color: var(--ivory-2); }
 .site-nav { display: none; }
 .site-header__actions { display: flex; align-items: center; gap: 8px; }
 .icon-link { display: inline-grid; place-items: center; width: 48px; height: 48px; margin-right: -12px; }
@@ -313,7 +325,7 @@ button { font: inherit; color: inherit; }
 .hero__stage .stage { --sw: min(56vw, 260px); --lamp: 24%; --plinth: 24%; }
 .hero__stage .note { max-width: 70%; }
 .hero__content { position: relative; z-index: 2; display: grid; gap: 14px; padding: 8px var(--gutter) 28px; }
-.hero__title { font-size: clamp(3.1rem, 14vw, 6.6rem); }
+.hero__title { font-size: clamp(2.2rem, 10.4vw, 3.6rem); }
 .hero__lead { color: var(--ivory-2); max-width: 36ch; font-size: .9375rem; }
 .hero__actions { display: grid; gap: 10px; margin-top: 8px; }
 .hero__meta, .hero__foot { display: none; }
@@ -330,7 +342,7 @@ button { font: inherit; color: inherit; }
 .cat-card .stage { --sw: 58cqw; --lamp: 20%; --plinth: 22%; }
 .cat-card .stage__jewel { left: -20%; right: -20%; }
 .cat-card__body { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 4px 16px 16px; }
-.cat-card__name { font-size: clamp(1.75rem, 6vw, 2.4rem); transition: color .3s; }
+.cat-card__name { font-size: clamp(1.25rem, 4.4vw, 1.75rem); transition: color .3s; }
 .cat-card__more { display: inline-flex; color: var(--ink-2); transition: color .3s; }
 .cat-card__more svg { width: 18px; height: 18px; }
 .cat-card .note { font-size: .5625rem; }
@@ -358,7 +370,7 @@ button { font: inherit; color: inherit; }
 .piece .stage { --sw: 60cqw; --lamp: 18%; --plinth: 20%; --fade: var(--night-2); }
 .piece__tag { position: absolute; z-index: 3; top: 14px; left: 14px; padding: 5px 12px; border-radius: 999px; background: rgba(243, 238, 230, .12); font-size: .75rem; font-weight: 500; }
 .piece__body { padding: 0 18px 18px; display: grid; gap: 2px; }
-.piece__name { font-size: 1.875rem; }
+.piece__name { font-size: 1.5rem; }
 .piece__meta { font-size: .875rem; color: var(--ivory-2); }
 .piece .link-arrow { margin-top: 4px; justify-self: start; }
 .carousel__nav { display: flex; justify-content: center; gap: 10px; margin-top: clamp(24px, 3vw, 40px); }
@@ -380,7 +392,7 @@ button { font: inherit; color: inherit; }
 .story__grid { display: grid; gap: clamp(48px, 7vw, 110px); align-items: center; }
 .story__text { display: grid; gap: 22px; justify-items: start; }
 .story__text p { color: var(--ivory-2); max-width: 46ch; }
-.story__text h3 { font-size: 1.875rem; margin-top: 10px; }
+.story__text h3 { font-size: 1.5rem; margin-top: 10px; }
 .collage { position: relative; padding: 0 0 18% 14%; }
 .collage__main { --ar: 4 / 5; }
 .collage__small { --ar: 3 / 4; position: absolute; left: 0; bottom: 0; width: 44%; outline: 6px solid var(--night); }
@@ -395,7 +407,7 @@ button { font: inherit; color: inherit; }
 .info__card { background: var(--stone-2); border-radius: var(--r); padding: clamp(22px, 3vw, 34px); display: grid; gap: 10px; align-content: start; }
 .info dt { font-size: .6875rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-2); }
 .info dd { margin: 0; }
-.info__big { font-family: var(--serif); font-size: 2rem; line-height: 1.1; font-style: normal; }
+.info__big { font-family: var(--serif); font-size: 1.5rem; line-height: 1.3; font-style: normal; }
 .info__big a { border-bottom: 1px solid var(--line-l); }
 .info__big a:hover { border-color: var(--ink); }
 .hours { width: 100%; border-collapse: collapse; font-size: .9375rem; }
@@ -411,7 +423,7 @@ button { font: inherit; color: inherit; }
   background: radial-gradient(circle at 50% 50%, transparent 0 140px, var(--line-l) 140px 141px, transparent 141px 230px, var(--line-l) 230px 231px, transparent 231px);
 }
 .map__pin { width: 30px; height: 30px; color: var(--ink); }
-.map__addr { font-family: var(--serif); font-size: 1.75rem; }
+.map__addr { font-family: var(--serif); font-size: 1.375rem; }
 .map__note { font-size: .8125rem; color: var(--ink-2); max-width: 30ch; }
 .map iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; filter: grayscale(1) sepia(.15) contrast(.95); }
 
@@ -490,7 +502,7 @@ button { font: inherit; color: inherit; }
     position: absolute; z-index: 2; left: 0; top: 50%; transform: translateY(-46%);
     width: calc(50% - var(--hsw) / 2 - 28px); padding: 0 0 0 var(--gutter); gap: 20px;
   }
-  .hero__title { font-size: clamp(3.6rem, 5vw, 6.2rem); }
+  .hero__title { font-size: clamp(2.6rem, 3.7vw, 4rem); }
   .hero__actions { grid-template-columns: auto; justify-items: start; }
   .hero__lead { display: none; }
   .hero__meta {
@@ -586,7 +598,7 @@ button { font: inherit; color: inherit; }
 
   <div class="hero__content">
     <p class="meta">Gioielleria storica a Cuneo</p>
-    <h1 class="hero__title" id="hero-title">Gioielli<br>da <em>tramandare.</em></h1>
+    <h1 class="hero__title" id="hero-title">Gioielli da<br>tramandare</h1>
     <p class="hero__lead">Via Caraglio 6a. Scrivici per una consulenza o per vedere un pezzo dal vivo, in negozio.</p>
     <div class="hero__actions" id="hero-actions">
       <a class="btn btn--taupe" href="https://wa.me/390000000000" data-wa="Buongiorno, vorrei informazioni su...">
@@ -622,7 +634,7 @@ button { font: inherit; color: inherit; }
     <div class="container">
       <div class="meta meta--head reveal"><span>01</span><span class="meta__line"></span><span>Collezioni</span></div>
       <div class="section-top reveal">
-        <h2 class="title" id="cat-title">Scegli da<br>dove <em>iniziare.</em></h2>
+        <h2 class="title" id="cat-title">Le collezioni</h2>
         <p class="lead">Ogni pezzo si può vedere e provare in negozio. Tocca una categoria e scrivici: ti diciamo cosa c'è in vetrina.</p>
       </div>
 
@@ -694,7 +706,7 @@ button { font: inherit; color: inherit; }
     <div class="container">
       <div class="meta meta--head reveal"><span>02</span><span class="meta__line"></span><span>In evidenza</span></div>
       <div class="section-top reveal">
-        <h2 class="title" id="feat-title">Pezzi <em>scelti.</em></h2>
+        <h2 class="title" id="feat-title">Pezzi scelti</h2>
         <p class="lead">Una selezione di quello che trovi oggi in negozio. Chiedici di vederli dal vivo.</p>
       </div>
     </div>
@@ -754,7 +766,7 @@ button { font: inherit; color: inherit; }
       <div class="meta meta--head reveal"><span>03</span><span class="meta__line"></span><span>La nostra storia</span></div>
       <div class="story__grid">
         <div class="story__text reveal">
-          <h2 class="title" id="story-title">Dietro la vetrina,<br>il <em>laboratorio.</em></h2>
+          <h2 class="title" id="story-title">Dietro la vetrina,<br>il laboratorio</h2>
           <!-- SEGNAPOSTO TESTO — il negozio: sostituire con il racconto reale (date, persone, fatti forniti dalla titolare). -->
           <p>Qui va il racconto del negozio: come è nata la Gioielleria Meda, chi l'ha fondata e chi la porta avanti oggi. Due o tre frasi, scritte come le si direbbe a un cliente al banco.</p>
           <h3>Il laboratorio</h3>
@@ -789,7 +801,7 @@ button { font: inherit; color: inherit; }
     <div class="container">
       <div class="meta meta--head reveal"><span>04</span><span class="meta__line"></span><span>Contatti</span></div>
       <div class="section-top reveal">
-        <h2 class="title" id="contact-title">Vieni a<br><em>trovarci.</em></h2>
+        <h2 class="title" id="contact-title">Vieni a trovarci</h2>
         <div class="visit__side">
           <p class="lead">Via Caraglio 6a, Cuneo. Si apre WhatsApp con un messaggio già pronto: basta completarlo.</p>
           <a class="btn btn--ink" href="https://wa.me/390000000000" data-wa="Buongiorno, vorrei informazioni su...">
